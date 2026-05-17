@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Shusho Parcel Map</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+#map {
+    height: 100vh;
+}
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script>
+
+var map = L.map('map');
+
+L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 25
+}).addTo(map);
+
+fetch("parcels.geojson")
+.then(response => response.json())
+.then(function(data) {
+
+    var selectedLayer = null;
+
+    function defaultStyle(feature) {
+        return {
+            fillColor: "lightblue",
+            weight: 2,
+            color: "red",
+            fillOpacity: 0.8
+        };
+    }
+
+    var geojsonLayer = L.geoJSON(data, {
+
+        style: defaultStyle,
+
+        onEachFeature: function(feature, layer) {
+
+            layer.on("click", function() {
+
+                // Reset previous selection
+                if (selectedLayer) {
+                    geojsonLayer.resetStyle(selectedLayer);
+                }
+
+                // Highlight clicked parcel
+                layer.setStyle({
+                    weight: 4,
+                    color: "red",
+                    fillOpacity: 1
+                });
+
+                selectedLayer = layer;
+
+                // Show popup
+                layer.bindPopup(
+                    "<b>UPI:</b> " + feature.properties.upi +
+                    "<br><b>Area:</b> " + feature.properties.Area + " m²" +
+                    "<br><b>Land Use:</b> " + feature.properties.Land_Use
+                ).openPopup();
+
+            });
+
+        }
+
+    }).addTo(map);
+
+    map.fitBounds(geojsonLayer.getBounds());
+
+})
+.catch(function(error){
+    console.log("Error loading GeoJSON:", error);
+});
+
+</script>
+
+</body>
+</html>
