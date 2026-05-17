@@ -36,7 +36,7 @@ fetch("parcels.geojson")
         return {
             fillColor: "lightblue",
             weight: 2,
-            color: "red",
+            color: "blue",
             fillOpacity: 0.8
         };
     }
@@ -57,8 +57,8 @@ fetch("parcels.geojson")
                 // Highlight clicked parcel
                 layer.setStyle({
                     weight: 4,
-                    color: "red",
-                    fillOpacity: 1
+                    color: "blue",
+                    fillOpacity: 2
                 });
 
                 selectedLayer = layer;
